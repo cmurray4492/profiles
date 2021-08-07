@@ -1,0 +1,1 @@
+C:\dev\profiles\venv\Scripts\activate
