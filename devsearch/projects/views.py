@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+
 
 # Create your views here.
-
-
 def projects(request):
-    return render(request, 'projects/projects.html')
+    page = 'projects'
+    number = 10
+    context = {'page': page, 'number': number}
+    return render(request, 'projects/projects.html', context)
 
 
 def project(request, pk):
