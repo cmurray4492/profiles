@@ -8,21 +8,29 @@
 
 {% block content %}
 
-<p>Hello, you are on the {{page}} page</p>
-
-{% if number > 10 %}
-    <p>Number is greater than 10.</p>
-{% elif number == 10 %}
-    <p>The number is 10</p>
-{% else %}
-    <p>Number is less than 10</p>
-{% endif %}
-
-<hr>
 <h1>Projects</h1>
 
-    <h1>Projects Template</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores placeat fugit delectus nemo laudantium, mollitia fugiat aut et repellat non, velit repellendus repudiandae quis, ab aliquam cum praesentium quidem consequuntur?</p>
+<table>
+    <tr>
+        <th>Project</th>
+        <th>Ratio</th>
+        <th>Votes</th>
+        <th></th>
+        <th></th>
+    </tr>
+    {% for project in projects %}
+        <tr>
+            <td>{{project.title}}</td>
+            <td>{{project.vote_ratio}}%</td>
+            <td>{{project.vote_total}}</td>
+            <td>{{project.created}}</td>
+            <td><a href="{% url 'update-project' project.id %}">Edit</a></td>
+            <td><a href="{% url 'delete-project' project.id %}">Delete</a></td>
+            <td><a href="{% url 'project' project.id %}">View</a></td>
+        </tr>
+    {% endfor %}
+</table>
+
 
     
 {% endblock content %}
