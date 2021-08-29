@@ -2,8 +2,18 @@
 
 
 {% block content %}
+
+<p>The image should be below this</p>
+<img style="max-width: 500px;" src="{{ project.featured_image.url }}">
+
     <h1>{{project.title}}</h1>
+    <hr>
+    {% for tag in project.tags.all %}
+        <span style="border: 1px solid grey;">{{tag}}</spanstyle>
+    {% endfor %}
+    <hr>
     <br>
     <p>{{project.description}}</p>
+    <p>It this working</p>
 
 {% endblock content %}
