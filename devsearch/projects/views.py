@@ -1,32 +1,24 @@
+# from turtle import right
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .models import Project, Tag
 from .forms import ProjectForm
-from .utils import searchProjects
+from .utils import searchProjects, paginateProjects
 
 
 def projects(request):
+    ''' Projects Fucntion '''
     projects, search_query = searchProjects(request)
 
-    page = request.GET.get('page')
-    results = 3
-    paginator = Paginator(projects, results)
-    
-    try:
-        projects = paginator.page(page)
-    except PageNotAnInteger:
-        page = 1
-        projects = paginator.page(page)
-    except EmptyPage:
-        page = paginator.num_pages
-        projects = paginator.page(page)
+    custom_range, projects = paginateProjects(request, projects, 3)
 
-    context = {'projects': projects, 'search_query': search_query}
+    context = {'projects': projects,
+               'search_query': search_query, 'custom_range': custom_range}
     return render(request, 'projects/projects.html', context)
 
 
 def project(request, pk):
+    ''' Project Fucntion '''
     project = Project.objects.get(id=pk)
     # print(project)
     return render(request, 'projects/single-project.html', {'project': project})
@@ -49,10 +41,10 @@ def createProject(request):
     return render(request, "projects/project_form.html", context)
 
 
-def project(request, pk):
-    project = Project.objects.get(id=pk)
-    # print(project)
-    return render(request, 'projects/single-project.html', {'project': project})
+# def project(request, pk):
+#     project = Project.objects.get(id=pk)
+#     # print(project)
+#     return render(request, 'projects/single-project.html', {'project': project})
 
 
 @login_required(login_url="login")
@@ -73,6 +65,7 @@ def updateProject(request, pk):
 
 @login_required(login_url="login")
 def deleteProject(request, pk):
+    ''' Delete Project Fucntion '''
     profile = request.user.profile
     project = profile.project_set.get(id=pk)
 
