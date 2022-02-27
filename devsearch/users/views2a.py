@@ -11,6 +11,7 @@ from .forms import CustomUserCreationForm, ProfileForm, SkillForm, MessageForm
 from .utils import searchProfiles, paginateProfiles
 
 
+# Create your views here.
 def loginUser(request):
     page = 'login'
 
@@ -31,17 +32,16 @@ def loginUser(request):
         if user is not None:
             login(request, user)
             return redirect(request.GET['next'] if 'next' in request.GET else 'account')
-
         else:
-            messages.error(request, 'Username OR password is incorrect')
+            messages.error(request, 'Username or Password incorrect')
 
     return render(request, 'users/login_register.html')
 
 
 def logoutUser(request):
     logout(request)
-    messages.info(request, 'User was logged out!')
-    return redirect('login')
+    messages.error(request, 'User was logged out!')
+    return redirect('profiles')
 
 
 def registerUser(request):
@@ -55,14 +55,12 @@ def registerUser(request):
             user.username = user.username.lower()
             user.save()
 
-            messages.success(request, 'User account was created!')
+            messages.success(request, 'User account was created')
 
             login(request, user)
             return redirect('edit-account')
-
         else:
-            messages.success(
-                request, 'An error has occurred during registration')
+            messages.success(request, 'An error has occurred in registration')
 
     context = {'page': page, 'form': form}
     return render(request, 'users/login_register.html', context)
@@ -72,6 +70,7 @@ def profiles(request):
     profiles, search_query = searchProfiles(request)
 
     custom_range, profiles = paginateProfiles(request, profiles, 3)
+
     context = {'profiles': profiles, 'search_query': search_query,
                'custom_range': custom_range}
     return render(request, 'users/profiles.html', context)
@@ -83,8 +82,9 @@ def userProfile(request, pk):
     topSkills = profile.skill_set.exclude(description__exact="")
     otherSkills = profile.skill_set.filter(description="")
 
-    context = {'profile': profile, 'topSkills': topSkills,
-               "otherSkills": otherSkills}
+    context = {'profile': profile,
+               'topSkills': topSkills,
+               'otherSkills': otherSkills}
     return render(request, 'users/user-profile.html', context)
 
 
@@ -95,7 +95,7 @@ def userAccount(request):
     skills = profile.skill_set.all()
     projects = profile.project_set.all()
 
-    context = {'profile': profile, 'skills': skills, 'projects': projects}
+    context = {'profile': profile, 'skills': skills, 'projects': projects, }
     return render(request, 'users/account.html', context)
 
 
@@ -108,7 +108,6 @@ def editAccount(request):
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-
             return redirect('account')
 
     context = {'form': form}
@@ -118,7 +117,7 @@ def editAccount(request):
 @login_required(login_url='login')
 def createSkill(request):
     profile = request.user.profile
-    form = SkillForm()
+    form = SkillForm
 
     if request.method == 'POST':
         form = SkillForm(request.POST)
@@ -126,7 +125,7 @@ def createSkill(request):
             skill = form.save(commit=False)
             skill.owner = profile
             skill.save()
-            messages.success(request, 'Skill was added successfully!')
+            messages.success(request, 'Skill added to profile.')
             return redirect('account')
 
     context = {'form': form}
@@ -143,7 +142,7 @@ def updateSkill(request, pk):
         form = SkillForm(request.POST, instance=skill)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Skill was updated successfully!')
+            messages.success(request, 'Skill was updated.')
             return redirect('account')
 
     context = {'form': form}
@@ -156,9 +155,8 @@ def deleteSkill(request, pk):
     skill = profile.skill_set.get(id=pk)
     if request.method == 'POST':
         skill.delete()
-        messages.success(request, 'Skill was deleted successfully!')
+        messages.success(request, 'Skill was deleted.')
         return redirect('account')
-
     context = {'object': skill}
     return render(request, 'delete_template.html', context)
 
@@ -167,7 +165,7 @@ def deleteSkill(request, pk):
 def inbox(request):
     profile = request.user.profile
     messageRequests = profile.messages.all()
-    unreadCount = messageRequests.filter(is_read=False).count()
+    unreadCount = messageRequests.filter(is_read=False).count
     context = {'messageRequests': messageRequests, 'unreadCount': unreadCount}
     return render(request, 'users/inbox.html', context)
 
